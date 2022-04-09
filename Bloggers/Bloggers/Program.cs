@@ -126,6 +126,7 @@ namespace HelloApp
                     break;
                    
             }
+            Console.WriteLine("В итоге пидр");
 
 
 
@@ -143,3 +144,4 @@ namespace HelloApp
 
 
 }
+
