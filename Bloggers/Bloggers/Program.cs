@@ -13,15 +13,19 @@ namespace HelloApp
     class Program
     {
 
-        static async void Main(string[] args)
+        static void Main(string[] args)
         {
-       
+            var dataManager = new DataManager();
+
             bool status = true;
 
             while (status)
             {
-                Zaprosi.Vivod();
-                
+                var bloggers = dataManager.GetBloggers();
+                foreach(var blogger in bloggers)
+                {
+                    Console.WriteLine($"{blogger.Id}\t{blogger.Name}\t{blogger.Post}");
+                }
                 Console.WriteLine("Выберите действие:");
                 Console.WriteLine("1 - Удалить");
                 Console.WriteLine("2 - Добавить");
@@ -32,13 +36,13 @@ namespace HelloApp
                     case 1:
                         Console.WriteLine("Вы выбрали удалить");
                         Console.WriteLine("Введите ID блогера:");
-                        Zaprosi.Delete();
+                        dataManager.DeleteBloggers();
                         break;
 
                     case 2:
                         Console.WriteLine("Вы выбрали добавить");
+                        dataManager.InsertBloggers();
                         Console.WriteLine("Запись добавлена");
-                        Zaprosi.Insert();
                         break;
 
                     case 3:
