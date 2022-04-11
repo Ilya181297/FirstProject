@@ -35,52 +35,59 @@ namespace Bloggers
                     bloggers.Add(bloger);
                 }
             }
-
             reader.Close();
             return bloggers;
         }
 
-        public int DeleteBlogger(int numberBlogger)
+        public bool DeleteBlogger(int idForDelete)
         {
-
-            string sqlExpression = String.Format("Delete from blogger where ID = '{0}'", numberBlogger);
+            string sqlExpression = String.Format("Delete from blogger where ID = '{0}'", idForDelete);
             var connection = new SqlConnection(_connectionString);
-            connection.Open();
-            var command = new SqlCommand(sqlExpression, connection);
             try
             {
-                return command.ExecuteNonQuery();
+                connection.Open();
+                var command = new SqlCommand(sqlExpression, connection);
+                return command.ExecuteNonQuery() > 0;
             }
-            catch
+            catch (Exception ex)
             {
-                return 0;
+                Console.WriteLine("Возникло исключение: " + ex.Message);
+                return false;
             }
-            connection.Close();
+            finally
+            {
+                connection.Close();
+            }
         }
 
-        public int InsertBlogger(int id, string? name, string? post)
+        public bool InsertBlogger(int id, string? name, string? post)
         {
+
             string sqlExpression = string.Format("Insert Into blogger" +
                    "(ID, Name, Post) Values(@ID, @Name, @Post)");
 
             var connection = new SqlConnection(_connectionString);
-
-            connection.Open();
-
-            var command = new SqlCommand(sqlExpression, connection);
-
-            command.Parameters.AddWithValue("@ID", id);
-            command.Parameters.AddWithValue("@Name", name);
-            command.Parameters.AddWithValue("@Post", post);
             try
             {
-                return command.ExecuteNonQuery();
+                connection.Open();
+
+                var command = new SqlCommand(sqlExpression, connection);
+
+                command.Parameters.AddWithValue("@ID", id);
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@Post", post);
+
+                return command.ExecuteNonQuery() > 0;
             }
-            catch
+            catch (Exception ex)
             {
-                return 0;
+                Console.WriteLine("Возникло исключение: " + ex.Message);
+                return false;
             }
-            connection.Close();
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }
