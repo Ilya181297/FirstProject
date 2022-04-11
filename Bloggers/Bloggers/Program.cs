@@ -1,11 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Data;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using Bloggers;
+﻿using Bloggers;
 
 
 namespace HelloApp
@@ -22,7 +15,7 @@ namespace HelloApp
             while (status)
             {
                 var bloggers = dataManager.GetBloggers();
-                foreach(var blogger in bloggers)
+                foreach (var blogger in bloggers)
                 {
                     Console.WriteLine($"{blogger.Id}\t{blogger.Name}\t{blogger.Post}");
                 }
@@ -36,13 +29,35 @@ namespace HelloApp
                     case 1:
                         Console.WriteLine("Вы выбрали удалить");
                         Console.WriteLine("Введите ID блогера:");
-                        dataManager.DeleteBloggers();
+                        int numberBlogger = Convert.ToInt32(Console.ReadLine());
+                        var result = dataManager.DeleteBlogger(numberBlogger);
+                        if (result == 0)
+                        {
+                            Console.WriteLine("Блогера с таким ID не существует");
+                        }
+                        else 
+                        {
+                            Console.WriteLine("Блогер удален");
+                        }
                         break;
 
                     case 2:
                         Console.WriteLine("Вы выбрали добавить");
-                        dataManager.InsertBloggers();
-                        Console.WriteLine("Запись добавлена");
+                        Console.WriteLine("Введите ID:");
+                        int id = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("Введите Name:");
+                        string? name = Convert.ToString(Console.ReadLine());
+                        Console.WriteLine("Введите Post:");
+                        string? post = Convert.ToString(Console.ReadLine());
+                        result = dataManager.InsertBlogger(id, name, post);
+                        if (result == 0)
+                        {
+                            Console.WriteLine("Введены не корректные данные. Блогер не добавлен");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Блогер добавлен");
+                        }
                         break;
 
                     case 3:

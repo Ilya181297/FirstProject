@@ -40,46 +40,46 @@ namespace Bloggers
             return bloggers;
         }
 
-        public void DeleteBloggers()
+        public int DeleteBlogger(int numberBlogger)
         {
-            var number = Convert.ToInt32(Console.ReadLine());
-            string sqlExpression = String.Format("Delete from blogger where ID = '{0}'", number);
+
+            string sqlExpression = String.Format("Delete from blogger where ID = '{0}'", numberBlogger);
             var connection = new SqlConnection(_connectionString);
             connection.Open();
             var command = new SqlCommand(sqlExpression, connection);
             try
             {
-                command.ExecuteNonQuery();
-                Console.WriteLine("Запись удалена");
+                return command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
+            catch
             {
-                var error = new Exception("Блогер не найден", ex);
-                throw error;
+                return 0;
             }
             connection.Close();
         }
 
-        public void InsertBloggers()
+        public int InsertBlogger(int id, string? name, string? post)
         {
-            Console.WriteLine("Введите ID:");
-            var id = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите Name:");
-            var name = Convert.ToString(Console.ReadLine());
-            Console.WriteLine("Введите Post:");
-            var post = Convert.ToString(Console.ReadLine());
-
             string sqlExpression = string.Format("Insert Into blogger" +
                    "(ID, Name, Post) Values(@ID, @Name, @Post)");
 
             var connection = new SqlConnection(_connectionString);
 
             connection.Open();
+
             var command = new SqlCommand(sqlExpression, connection);
+
             command.Parameters.AddWithValue("@ID", id);
             command.Parameters.AddWithValue("@Name", name);
             command.Parameters.AddWithValue("@Post", post);
-            command.ExecuteNonQuery();
+            try
+            {
+                return command.ExecuteNonQuery();
+            }
+            catch
+            {
+                return 0;
+            }
             connection.Close();
         }
     }
