@@ -1,145 +1,75 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Data;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using Bloggers;
+
 
 namespace HelloApp
 {
     class Program
     {
-       
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            string connectionString = "Server=DESKTOP-F3VVNA6\\;Database=Blogging;Trusted_Connection=true; TrustServerCertificate=True;";
+            var dataManager = new DataManager();
 
-            string sqlExpression = "SELECT * FROM blogger";
+            bool status = true;
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            while (status)
             {
-                await connection.OpenAsync();
-
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlDataReader reader = await command.ExecuteReaderAsync();
-
-                if (reader.HasRows) // если есть данные
+                var bloggers = dataManager.GetBloggers();
+                foreach (var blogger in bloggers)
                 {
-                    // выводим названия столбцов
-                    string columnName1 = reader.GetName(0);
-                    string columnName2 = reader.GetName(1);
-                    string columnName3 = reader.GetName(2);
-
-                    Console.WriteLine($"{columnName1}\t\t{columnName2}\t\t\t{columnName3}");
-
-                    while (await reader.ReadAsync()) // построчно считываем данные
-                    {
-                        object ID = reader.GetValue(0);
-                        object name = reader.GetValue(1);
-                        object post = reader.GetValue(2);
-
-                        Console.WriteLine($"{ID} \t\t{name} \t\t{post}");
-                    }
+                    Console.WriteLine($"{blogger.Id}\t{blogger.Name}\t{blogger.Post}");
                 }
+                Console.WriteLine("Выберите действие:");
+                Console.WriteLine("1 - Удалить");
+                Console.WriteLine("2 - Добавить");
+                Console.WriteLine("3 - Поиск блогера");
+                Console.WriteLine("4 - Закончить работу");
+                int number = System.Convert.ToInt32(Console.ReadLine());
+                switch (number)
+                {
+                    case 1:
+                        Console.WriteLine("Вы выбрали удалить");
+                        Console.WriteLine("Введите ID блогера:");
+                        int idForDelete = Convert.ToInt32(Console.ReadLine());
+                        var result = dataManager.DeleteBlogger(idForDelete);
+                        if (!result)
+                            Console.WriteLine("Блогера с таким ID не существует");
+                        else 
+                            Console.WriteLine("Блогер удален");
+                        break;
 
-                await reader.CloseAsync();
-            }
+                    case 2:
+                        Console.WriteLine("Вы выбрали добавить");
+                        Console.WriteLine("Введите ID:");
+                        int id = Convert.ToInt32(Console.ReadLine());
+                        Console.WriteLine("Введите Name:");
+                        string? name = Convert.ToString(Console.ReadLine());
+                        Console.WriteLine("Введите Post:");
+                        string? post = Convert.ToString(Console.ReadLine());
+                        result = dataManager.InsertBlogger(id, name, post);
+                        if (!result)
+                            Console.WriteLine("Введены не корректные данные. Блогер не добавлен");
+                        else
+                            Console.WriteLine("Блогер добавлен");
+                        break;
+                    case 3:
+                        Console.WriteLine("Введите имя Блогера:");
+                        var searchName = Console.ReadLine();
+                        var Poisk = bloggers.Where(bloger => bloger.Name.Contains(searchName)).ToList();
             
-
-            Console.WriteLine("Выберите действие:");
-            Console.WriteLine("1 - Удалить");
-            Console.WriteLine("2 - Добавить");
-            Console.WriteLine("3 - Обновить");
-            int number = System.Convert.ToInt32(Console.ReadLine());
-            switch (number)
-            {
-                case 1:
-
-                    Console.WriteLine("Вы выбрали удалить");
-                    Console.WriteLine("Введите ID блогера:");
-                    int id = Convert.ToInt32(Console.ReadLine());
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        await connection.OpenAsync();
-                        string sql = string.Format("Delete from blogger where ID = '{0}'", id);
-                        using (SqlCommand cmd = new SqlCommand(sql, connection))
+                        foreach (var blogger in Poisk)
                         {
-                            try
-                            {
-                                cmd.ExecuteNonQuery();
-                                Console.WriteLine("Запись удалена");
-                            }
-                            catch (SqlException ex)
-                            {
-                                Exception error = new Exception("Блогер не найден", ex);
-                                throw error;
-                            }
+                            Console.WriteLine($"{blogger.Id}\t{blogger.Name}\t{blogger.Post}");
                         }
-                        await connection.CloseAsync();
-                    }
-            
-                    break;
+                        break;
+                    case 4:
+                        Console.WriteLine("Работа закончена");
+                        status = false;
+                        break;
+                }
+                
 
-                case 2:
-                    Console.WriteLine("Вы выбрали добавить");
-                    
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-
-                    {
-                        await connection.OpenAsync();
-
-                        Console.WriteLine("Введите номер ID:");
-                        int ID = Convert.ToInt32(Console.ReadLine());
-                        Console.WriteLine("Введите Имя:");
-                        string? Name = Console.ReadLine();
-                        Console.WriteLine("Введите пост:");
-                        string? Post = Console.ReadLine();
-
-
-                        string sql = string.Format("Insert Into blogger" +
-                             "(ID, Name, Post) Values(@ID, @Name, @Post)");
-
-                        using (SqlCommand cmd = new SqlCommand(sql, connection))
-                        {
-                            // Добавить параметры
-                            cmd.Parameters.AddWithValue("@ID", ID);
-                            cmd.Parameters.AddWithValue("@Name", Name);
-                            cmd.Parameters.AddWithValue("@Post", Post);
-
-                            cmd.ExecuteNonQuery();
-                            
-                        }
-                        await connection.CloseAsync();
-                    }
-                    Console.WriteLine("Запись добавлена");
-        
-                    break;
-                  
-
-
-                case 3:
-                    Console.WriteLine("Вы выбрали обновить");
-                    break;
-                    default:
-                   
-                    break;
-                   
             }
-
-
-
-
-
-
         }
-
-
-
-
-
     }
-
-
-
 }
+
