@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Bloggers
 {
-    internal class DataManager
+    public class DataManager
     {
         private readonly string _connectionString;
         public DataManager()

@@ -602,6 +602,19 @@
             "rid": "win"
           }
         }
+      },
+      "DAL/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "Microsoft.Data.SqlClient": "4.1.0"
+        },
+        "compile": {
+          "bin/placeholder/DAL.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DAL.dll": {}
+        }
       }
     }
   },
@@ -2306,10 +2319,16 @@
         "useSharedDesignerContext.txt",
         "version.txt"
       ]
+    },
+    "DAL/1.0.0": {
+      "type": "project",
+      "path": "../DAL/DAL.csproj",
+      "msbuildProject": "../DAL/DAL.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
+      "DAL >= 1.0.0",
       "Microsoft.Data.SqlClient >= 4.1.0"
     ]
   },
@@ -2319,9 +2338,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\Bloggers\\Bloggers.csproj",
-      "projectName": "Bloggers",
-      "projectPath": "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\Bloggers\\Bloggers.csproj",
+      "projectUniqueName": "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\Bloggers\\ConsoleApp.csproj",
+      "projectName": "ConsoleApp",
+      "projectPath": "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\Bloggers\\ConsoleApp.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\Bloggers\\obj\\",
       "projectStyle": "PackageReference",
@@ -2339,7 +2358,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\DAL\\DAL.csproj": {
+              "projectPath": "C:\\Users\\User\\source\\repos\\FirstProject\\FirstProject\\Bloggers\\DAL\\DAL.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
