@@ -59,6 +59,27 @@ namespace Bloggers
                 connection.Close();
             }
         }
+        public bool UpdateBlogger(int idForUpgate, string? nameForUpdate, string? postForUpdate)
+        {
+            string sqlExpression = $"Update blogger Set Name = '{nameForUpdate}', Post = '{postForUpdate}'" +
+                $" Where ID = '{idForUpgate}'";
+            var connection = new SqlConnection(_connectionString);
+            try
+            {
+                connection.Open();
+                var command = new SqlCommand(sqlExpression, connection);
+                return command.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Возникло исключение: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
 
         public bool InsertBlogger(int id, string? name, string? post)
         {

@@ -1,97 +1,138 @@
 using Bloggers;
+using Bloggers.Models;
 
 namespace BloggersClient
 {
     public partial class fmMain : Form
     {
+        private bool _isEdit = false;
+        private Blogger _selectedBlogger => dataGridView1.SelectedRows.Count > 0
+            ? dataGridView1.SelectedRows[0].DataBoundItem as Blogger : null;
+        private DataManager _dataManager = new DataManager();
+
         public fmMain()
         {
             InitializeComponent();
-
         }
 
         private void fmMain_Load(object sender, EventArgs e)
         {
-            var dataManager = new DataManager();
-            var bloggers = dataManager.GetBloggers();
-            dataGridView1.DataSource = bloggers;
+            Refresh();
+        }
+        private void ClearFields()
+        {
+            textBoxId.Text = null;
+            textBoxName.Text = null;
+            textBoxPost.Text = null;
+        }
+        private void Refresh()
+        {
+            dataGridView1.DataSource = _dataManager.GetBloggers();
+
         }
 
         private void InsertBlogger_Click(object sender, EventArgs e)
         {
-            bool rezult = false;
-            var dataManager = new DataManager();
             int id = Convert.ToInt32(textBoxId.Text);
-            string? name = Convert.ToString(textBoxName.Text);
-            string? post = Convert.ToString(textBoxPost.Text);
+            string? name = textBoxName.Text;
+            string? post = textBoxPost.Text;
 
-            for (int i = 0; i < dataGridView1.RowCount; i++)
+            if (!_isEdit)
             {
-                if (dataGridView1.Rows[i].Cells[0].Value.ToString() == textBoxId.Text)
+                bool rezult = false;
+                for (int i = 0; i < dataGridView1.RowCount; i++)
                 {
-                    rezult = true;
-                    break;
+                    if (dataGridView1.Rows[i].Cells[0].Value.ToString() == textBoxId.Text)
+                    {
+                        rezult = true;
+                        break;
+                    }
                 }
-            }
-            if (rezult)
-            {
-                MessageBox.Show("Такой номер уже существует");
-                textBoxId.Text = null;
+                if (rezult)
+                {
+                    MessageBox.Show("Такой номер уже существует");
+                    textBoxId.Text = null;
+                    return;
+                }
+
+                if (!rezult && string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(post))
+                {
+                    MessageBox.Show("Заполните все данные");
+                    return;
+                }
+
+                    _dataManager.InsertBlogger(id, name, post);
+                    Refresh();
+                    ClearFields();
+                return;
             }
 
-            else if (!rezult && String.IsNullOrEmpty(name) || String.IsNullOrEmpty(post))
-            {
-                MessageBox.Show("Заполните все данные");
-            }
+            _dataManager.UpdateBlogger(id, name, post);
+            Refresh();
 
-            else
-            {
-                dataManager.InsertBlogger(id, name, post);
-                var bloggers = dataManager.GetBloggers();
-                dataGridView1.DataSource = bloggers;
-                textBoxId.Text = null;
-                textBoxName.Text = null;
-                textBoxPost.Text = null;
-            }
+            InsertBlogger.Text = "Добавить";
+            button1.Visible = false;
+            _isEdit = false;
+            ClearFields();
         }
         private void DeleteBlogger_Click(object sender, EventArgs e)
         {
-            bool rezult = false;
-            var dataManager = new DataManager();
-            int id = Convert.ToInt32(textBoxId.Text);
-            for (int i = 0; i < dataGridView1.RowCount; i++)
+            var deleteBloger = _selectedBlogger;
+            if (deleteBloger is null)
             {
-                if (dataGridView1.Rows[i].Cells[0].Value.ToString() == textBoxId.Text)
-                {
-                    rezult = true;
-                    break;
-                }
+                MessageBox.Show("Выберите блога сэр");
+                return;
             }
-            if (rezult)
-            {
-                dataManager.DeleteBlogger(id);
-                var bloggers = dataManager.GetBloggers();
-                dataGridView1.DataSource = bloggers;
-                textBoxId.Text = null;
-            }
-            else
-            {
-                MessageBox.Show("Такого номера не существует");
-                textBoxId.Text = null;
-            }
+            var rezult = MessageBox.Show("Вы действительно хотите удалить блогера?", "Подтверждение", MessageBoxButtons.YesNo);
+            if (rezult != DialogResult.Yes)
+                return;
+            _dataManager.DeleteBlogger(deleteBloger.Id);
+            Refresh();
+            ClearFields();
         }
 
         private void textBoxId_KeyPress(object sender, KeyPressEventArgs e)
         {
-
-            if (Char.IsNumber(e.KeyChar) || e.KeyChar == ',')
+            if (char.IsNumber(e.KeyChar) || e.KeyChar == ',')
             {
                 return;
             }
             textBoxId.Text = null;
             e.Handled = true;
         }
+
+        private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            textBoxId.Text = Convert.ToString(_selectedBlogger.Id);
+            textBoxName.Text = Convert.ToString(_selectedBlogger.Name);
+            textBoxPost.Text = Convert.ToString(_selectedBlogger.Post);
+        }
+
+        private void textBoxId_TextChanged_1(object sender, EventArgs e)
+        {
+            if (textBoxId.Text != Convert.ToString(_selectedBlogger.Id))
+            {
+                return;
+            }
+            if ((textBoxId.Text == Convert.ToString(_selectedBlogger.Id)) 
+                && (textBoxName.Text == Convert.ToString(_selectedBlogger.Name))
+                  && (textBoxPost.Text == Convert.ToString(_selectedBlogger.Post)))
+            {
+                _isEdit = false;
+                button1.Visible = false;
+                InsertBlogger.Text = "Добавить";
+                return;
+            }
+            _isEdit = true;
+            button1.Visible = true;
+            InsertBlogger.Text = "Сохранить";
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ClearFields();
+            button1.Visible = false;
+            InsertBlogger.Text = "Добавить";
+        }
     }
-
-
 }
