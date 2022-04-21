@@ -1,14 +1,16 @@
 using Bloggers;
 using Bloggers.Models;
+using DAL;
 
 namespace BloggersClient
 {
     public partial class fmMain : Form
     {
+        private IDataManager _dataManager = new DataManager();
         private bool _isEdit = false;
-        private Blogger _selectedBlogger => dataGridView1.SelectedRows.Count > 0
-            ? dataGridView1.SelectedRows[0].DataBoundItem as Blogger : null;
-        private DataManager _dataManager = new DataManager();
+
+        private Blogger? _selectedBlogger => dgvBloggers.SelectedRows.Count > 0
+            ? dgvBloggers.SelectedRows[0].DataBoundItem as Blogger : null;
 
         public fmMain()
         {
@@ -17,122 +19,101 @@ namespace BloggersClient
 
         private void fmMain_Load(object sender, EventArgs e)
         {
-            Refresh();
+            RefreshDataSource();
         }
+
         private void ClearFields()
         {
             textBoxId.Text = null;
             textBoxName.Text = null;
             textBoxPost.Text = null;
         }
-        private void Refresh()
-        {
-            dataGridView1.DataSource = _dataManager.GetBloggers();
 
+        private void RefreshDataSource()
+        {
+            dgvBloggers.DataSource = _dataManager.GetBloggers();
         }
 
-        private void InsertBlogger_Click(object sender, EventArgs e)
+        private void btnNewBlogger_Click(object sender, EventArgs e)
         {
-            int id = Convert.ToInt32(textBoxId.Text);
-            string? name = textBoxName.Text;
-            string? post = textBoxPost.Text;
-
-            if (!_isEdit)
-            {
-                bool rezult = false;
-                for (int i = 0; i < dataGridView1.RowCount; i++)
-                {
-                    if (dataGridView1.Rows[i].Cells[0].Value.ToString() == textBoxId.Text)
-                    {
-                        rezult = true;
-                        break;
-                    }
-                }
-                if (rezult)
-                {
-                    MessageBox.Show("Такой номер уже существует");
-                    textBoxId.Text = null;
-                    return;
-                }
-
-                if (!rezult && string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(post))
-                {
-                    MessageBox.Show("Заполните все данные");
-                    return;
-                }
-
-                    _dataManager.InsertBlogger(id, name, post);
-                    Refresh();
-                    ClearFields();
-                return;
-            }
-
-            _dataManager.UpdateBlogger(id, name, post);
-            Refresh();
-
-            InsertBlogger.Text = "Добавить";
-            button1.Visible = false;
-            _isEdit = false;
             ClearFields();
+            _isEdit = false;
+            btnDelete.Enabled = false;
+            btnSave.Enabled = true;
         }
+
         private void DeleteBlogger_Click(object sender, EventArgs e)
         {
-            var deleteBloger = _selectedBlogger;
-            if (deleteBloger is null)
-            {
-                MessageBox.Show("Выберите блога сэр");
+            var result = MessageBox.Show("Вы действительно хотите удалить блогера?", "Подтверждение", MessageBoxButtons.YesNo);
+            if (result != DialogResult.Yes)
                 return;
-            }
-            var rezult = MessageBox.Show("Вы действительно хотите удалить блогера?", "Подтверждение", MessageBoxButtons.YesNo);
-            if (rezult != DialogResult.Yes)
-                return;
-            _dataManager.DeleteBlogger(deleteBloger.Id);
-            Refresh();
-            ClearFields();
+
+            _dataManager.DeleteBlogger(_selectedBlogger.Id);
+            RefreshDataSource();
+            // ClearFields();
         }
 
-        private void textBoxId_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBoxes_Changed(object sender, EventArgs e)
         {
-            if (char.IsNumber(e.KeyChar) || e.KeyChar == ',')
+            var selectedBlogger = _selectedBlogger;
+            if (selectedBlogger is null)
+                return;
+
+            if (selectedBlogger.Name != textBoxName.Text
+                || selectedBlogger.Post != textBoxPost.Text)
             {
+                btnSave.Enabled = true;
                 return;
             }
-            textBoxId.Text = null;
-            e.Handled = true;
+
+            btnSave.Enabled = false;
         }
 
-        private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        private void dgvBloggers_SelectionChanged(object sender, EventArgs e)
         {
-            textBoxId.Text = Convert.ToString(_selectedBlogger.Id);
-            textBoxName.Text = Convert.ToString(_selectedBlogger.Name);
-            textBoxPost.Text = Convert.ToString(_selectedBlogger.Post);
-        }
+            var selectedBlogger = _selectedBlogger;
+            if (selectedBlogger is null)
+            {
+                ClearFields();
+                btnDelete.Enabled = false;
+                return;
+            }
 
-        private void textBoxId_TextChanged_1(object sender, EventArgs e)
-        {
-            if (textBoxId.Text != Convert.ToString(_selectedBlogger.Id))
-            {
-                return;
-            }
-            if ((textBoxId.Text == Convert.ToString(_selectedBlogger.Id)) 
-                && (textBoxName.Text == Convert.ToString(_selectedBlogger.Name))
-                  && (textBoxPost.Text == Convert.ToString(_selectedBlogger.Post)))
-            {
-                _isEdit = false;
-                button1.Visible = false;
-                InsertBlogger.Text = "Добавить";
-                return;
-            }
             _isEdit = true;
-            button1.Visible = true;
-            InsertBlogger.Text = "Сохранить";
+            btnDelete.Enabled = true;
+
+            textBoxId.Text = selectedBlogger.Id.ToString();
+            textBoxName.Text = selectedBlogger.Name;
+            textBoxPost.Text = selectedBlogger.Post;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
-            ClearFields();
-            button1.Visible = false;
-            InsertBlogger.Text = "Добавить";
+            if (!CheckFields())
+            {
+                MessageBox.Show("Заполните обязательные поля, Сэр", "Валидация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show("Сохранить данные?", "Сохранение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+                return;
+
+            if (_isEdit)
+                _dataManager.UpdateBlogger(Convert.ToInt32(textBoxId.Text), textBoxName.Text, textBoxPost.Text);
+            else
+                _dataManager.InsertBlogger(textBoxName.Text, textBoxPost.Text);
+
+            RefreshDataSource();
+        }
+
+        private bool CheckFields()
+        {
+            if (string.IsNullOrWhiteSpace(textBoxName.Text)
+                || string.IsNullOrWhiteSpace(textBoxPost.Text))
+                return default;
+
+            return true;
         }
     }
 }

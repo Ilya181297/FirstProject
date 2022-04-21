@@ -1,4 +1,6 @@
-﻿namespace Bloggers.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Bloggers.Models
 {
     public class Blogger
     {

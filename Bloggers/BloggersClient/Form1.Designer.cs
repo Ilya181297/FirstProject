@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dgvBloggers = new System.Windows.Forms.DataGridView();
             this.colId = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -39,36 +39,36 @@
             this.textBoxId = new System.Windows.Forms.TextBox();
             this.textBoxName = new System.Windows.Forms.TextBox();
             this.textBoxPost = new System.Windows.Forms.TextBox();
-            this.InsertBlogger = new System.Windows.Forms.Button();
-            this.DeleteBlogger = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.btnNewBlogger = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvBloggers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataManagerBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataManagerBindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bloggerBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
-            // dataGridView1
+            // dgvBloggers
             // 
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgvBloggers.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvBloggers.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgvBloggers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvBloggers.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colId,
             this.colName,
             this.colPost});
-            this.dataGridView1.Location = new System.Drawing.Point(26, 46);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 25;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(343, 183);
-            this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseClick);
+            this.dgvBloggers.Location = new System.Drawing.Point(26, 46);
+            this.dgvBloggers.Name = "dgvBloggers";
+            this.dgvBloggers.RowTemplate.Height = 25;
+            this.dgvBloggers.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvBloggers.Size = new System.Drawing.Size(343, 183);
+            this.dgvBloggers.TabIndex = 0;
+            this.dgvBloggers.SelectionChanged += new System.EventHandler(this.dgvBloggers_SelectionChanged);
             // 
             // colId
             // 
             this.colId.DataPropertyName = "Id";
-            this.colId.HeaderText = "Номер";
+            this.colId.HeaderText = "Идентификатор";
             this.colId.Name = "colId";
             this.colId.ReadOnly = true;
             // 
@@ -100,80 +100,81 @@
             // 
             // textBoxId
             // 
-            this.textBoxId.Location = new System.Drawing.Point(391, 37);
+            this.textBoxId.Location = new System.Drawing.Point(375, 46);
             this.textBoxId.Name = "textBoxId";
             this.textBoxId.PlaceholderText = "Введите Номер";
-            this.textBoxId.Size = new System.Drawing.Size(100, 23);
+            this.textBoxId.ReadOnly = true;
+            this.textBoxId.Size = new System.Drawing.Size(129, 23);
             this.textBoxId.TabIndex = 1;
             this.textBoxId.Tag = "Введите номер";
-            this.textBoxId.TextChanged += new System.EventHandler(this.textBoxId_TextChanged_1);
-            this.textBoxId.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxId_KeyPress);
+            this.textBoxId.TextChanged += new System.EventHandler(this.textBoxes_Changed);
             // 
             // textBoxName
             // 
-            this.textBoxName.Location = new System.Drawing.Point(391, 66);
+            this.textBoxName.Location = new System.Drawing.Point(375, 75);
             this.textBoxName.Name = "textBoxName";
             this.textBoxName.PlaceholderText = "Введите Имя";
-            this.textBoxName.Size = new System.Drawing.Size(100, 23);
+            this.textBoxName.Size = new System.Drawing.Size(129, 23);
             this.textBoxName.TabIndex = 2;
-            this.textBoxName.TextChanged += new System.EventHandler(this.textBoxId_TextChanged_1);
+            this.textBoxName.TextChanged += new System.EventHandler(this.textBoxes_Changed);
             // 
             // textBoxPost
             // 
-            this.textBoxPost.Location = new System.Drawing.Point(391, 95);
+            this.textBoxPost.Location = new System.Drawing.Point(375, 104);
             this.textBoxPost.Name = "textBoxPost";
             this.textBoxPost.PlaceholderText = "Введите Пост";
-            this.textBoxPost.Size = new System.Drawing.Size(100, 23);
+            this.textBoxPost.Size = new System.Drawing.Size(129, 23);
             this.textBoxPost.TabIndex = 3;
-            this.textBoxPost.TextChanged += new System.EventHandler(this.textBoxId_TextChanged_1);
+            this.textBoxPost.TextChanged += new System.EventHandler(this.textBoxes_Changed);
             // 
-            // InsertBlogger
+            // btnNewBlogger
             // 
-            this.InsertBlogger.Location = new System.Drawing.Point(391, 124);
-            this.InsertBlogger.Name = "InsertBlogger";
-            this.InsertBlogger.Size = new System.Drawing.Size(75, 23);
-            this.InsertBlogger.TabIndex = 4;
-            this.InsertBlogger.Text = "Добавить";
-            this.InsertBlogger.UseVisualStyleBackColor = true;
-            this.InsertBlogger.Click += new System.EventHandler(this.InsertBlogger_Click);
+            this.btnNewBlogger.Location = new System.Drawing.Point(375, 17);
+            this.btnNewBlogger.Name = "btnNewBlogger";
+            this.btnNewBlogger.Size = new System.Drawing.Size(129, 23);
+            this.btnNewBlogger.TabIndex = 4;
+            this.btnNewBlogger.Text = "Новый блогер";
+            this.btnNewBlogger.UseVisualStyleBackColor = true;
+            this.btnNewBlogger.Click += new System.EventHandler(this.btnNewBlogger_Click);
             // 
-            // DeleteBlogger
+            // btnDelete
             // 
-            this.DeleteBlogger.Location = new System.Drawing.Point(26, 12);
-            this.DeleteBlogger.Name = "DeleteBlogger";
-            this.DeleteBlogger.Size = new System.Drawing.Size(75, 23);
-            this.DeleteBlogger.TabIndex = 5;
-            this.DeleteBlogger.Text = "Удалить";
-            this.DeleteBlogger.UseVisualStyleBackColor = true;
-            this.DeleteBlogger.Click += new System.EventHandler(this.DeleteBlogger_Click);
+            this.btnDelete.Enabled = false;
+            this.btnDelete.Location = new System.Drawing.Point(294, 17);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(75, 23);
+            this.btnDelete.TabIndex = 5;
+            this.btnDelete.Text = "Удалить";
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.DeleteBlogger_Click);
             // 
-            // button1
+            // btnSave
             // 
-            this.button1.Location = new System.Drawing.Point(391, 153);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Отмена";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnSave.Enabled = false;
+            this.btnSave.Location = new System.Drawing.Point(375, 133);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(129, 23);
+            this.btnSave.TabIndex = 6;
+            this.btnSave.Text = "Сохранить";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // fmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(516, 241);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.DeleteBlogger);
-            this.Controls.Add(this.InsertBlogger);
+            this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.btnNewBlogger);
             this.Controls.Add(this.textBoxPost);
             this.Controls.Add(this.textBoxName);
             this.Controls.Add(this.textBoxId);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.dgvBloggers);
             this.Name = "fmMain";
             this.Text = "fmMain";
             this.Load += new System.EventHandler(this.fmMain_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvBloggers)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataManagerBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataManagerBindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bloggerBindingSource)).EndInit();
@@ -184,18 +185,18 @@
 
         #endregion
 
-        private DataGridView dataGridView1;
+        private DataGridView dgvBloggers;
         private BindingSource dataManagerBindingSource;
         private BindingSource dataManagerBindingSource1;
         private BindingSource bloggerBindingSource;
         private TextBox textBoxId;
         private TextBox textBoxName;
         private TextBox textBoxPost;
-        private Button InsertBlogger;
-        private Button DeleteBlogger;
+        private Button btnNewBlogger;
+        private Button btnDelete;
+        private Button btnSave;
         private DataGridViewTextBoxColumn colId;
         private DataGridViewTextBoxColumn colName;
         private DataGridViewTextBoxColumn colPost;
-        private Button button1;
     }
 }
