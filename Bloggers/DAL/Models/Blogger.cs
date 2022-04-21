@@ -1,6 +1,8 @@
-﻿namespace Bloggers.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Bloggers.Models
 {
-    internal class Blogger
+    public class Blogger
     {
         public int Id { get; set; }
         public string? Name { get; set; }

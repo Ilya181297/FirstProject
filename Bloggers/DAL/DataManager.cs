@@ -1,14 +1,15 @@
 ﻿using Bloggers.Models;
+using DAL;
 using Microsoft.Data.SqlClient;
 
 namespace Bloggers
 {
-    internal class DataManager
+    public class DataManager : IDataManager
     {
         private readonly string _connectionString;
         public DataManager()
         {
-            _connectionString = "Server = DESKTOP-F3VVNA6\\; Database = Blogging; Trusted_Connection = true; TrustServerCertificate = True; ";
+            _connectionString = "Server = DESKTOP-F3VVNA6\\; Database = Bloggers; Trusted_Connection = true; TrustServerCertificate = True; ";
         }
         public List<Blogger> GetBloggers()
         {
@@ -59,12 +60,33 @@ namespace Bloggers
                 connection.Close();
             }
         }
+        public bool UpdateBlogger(int idForUpgate, string? nameForUpdate, string? postForUpdate)
+        {
+            string sqlExpression = $"Update blogger Set Name = '{nameForUpdate}', Post = '{postForUpdate}'" +
+                $" Where ID = '{idForUpgate}'";
+            var connection = new SqlConnection(_connectionString);
+            try
+            {
+                connection.Open();
+                var command = new SqlCommand(sqlExpression, connection);
+                return command.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Возникло исключение: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
 
-        public bool InsertBlogger(int id, string? name, string? post)
+        public bool InsertBlogger(string? name, string? post)
         {
 
             string sqlExpression = string.Format("Insert Into blogger" +
-                   "(ID, Name, Post) Values(@ID, @Name, @Post)");
+                   "(Name, Post) Values(@Name, @Post)");
 
             var connection = new SqlConnection(_connectionString);
             try
@@ -72,8 +94,6 @@ namespace Bloggers
                 connection.Open();
 
                 var command = new SqlCommand(sqlExpression, connection);
-
-                command.Parameters.AddWithValue("@ID", id);
                 command.Parameters.AddWithValue("@Name", name);
                 command.Parameters.AddWithValue("@Post", post);
 
