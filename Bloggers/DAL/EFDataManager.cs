@@ -17,6 +17,14 @@ namespace DAL
             }
         }
 
+        public Blogger? Get(int id)
+        {
+            using (BloggersContext db = new BloggersContext())
+            {
+                return db.Blogger.Find(id);
+            }
+        }
+
         public List<Blogger> GetBloggers()
         {
             using (BloggersContext db = new BloggersContext())

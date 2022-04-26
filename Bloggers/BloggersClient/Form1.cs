@@ -1,16 +1,18 @@
 using Bloggers;
 using Bloggers.Models;
 using DAL;
+using WinFormApp;
 
 namespace BloggersClient
 {
     public partial class fmMain : Form
     {
-        private IDataManager _dataManager = new DataManager();
         private bool _isEdit = false;
 
         private Blogger? _selectedBlogger => dgvBloggers.SelectedRows.Count > 0
             ? dgvBloggers.SelectedRows[0].DataBoundItem as Blogger : null;
+
+        private readonly HttpHelper _httHelper = new HttpHelper();
 
         public fmMain()
         {
@@ -31,7 +33,7 @@ namespace BloggersClient
 
         private void RefreshDataSource()
         {
-            dgvBloggers.DataSource = _dataManager.GetBloggers();
+            dgvBloggers.DataSource = _httHelper.GetBloggers();
         }
 
         private void btnNewBlogger_Click(object sender, EventArgs e)
@@ -48,9 +50,9 @@ namespace BloggersClient
             if (result != DialogResult.Yes)
                 return;
 
-            _dataManager.DeleteBlogger(_selectedBlogger.Id);
+            _httHelper.DeleteBlogger(_selectedBlogger.Id);
             RefreshDataSource();
-            // ClearFields();
+            ClearFields();
         }
 
         private void textBoxes_Changed(object sender, EventArgs e)
@@ -100,9 +102,9 @@ namespace BloggersClient
                 return;
 
             if (_isEdit)
-                _dataManager.UpdateBlogger(Convert.ToInt32(textBoxId.Text), textBoxName.Text, textBoxPost.Text);
+                _httHelper.PutBlogger(Convert.ToInt32(textBoxId.Text), textBoxName.Text, textBoxPost.Text);
             else
-                _dataManager.InsertBlogger(textBoxName.Text, textBoxPost.Text);
+                _httHelper.PostBlogger(textBoxName.Text, textBoxPost.Text);
 
             RefreshDataSource();
         }

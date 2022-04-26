@@ -109,6 +109,11 @@ namespace Bloggers
                 connection.Close();
             }
         }
+
+        public Blogger? Get(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
