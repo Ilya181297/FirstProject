@@ -9,7 +9,7 @@ namespace DAL
         public BloggersContext()
         {
             _connectionString = "Server = DESKTOP-F3VVNA6\\; Database = Bloggers; Trusted_Connection = true; TrustServerCertificate = True; ";
-            Database.EnsureCreated();
+     //       Database.EnsureCreated();
         }
         public BloggersContext(DbContextOptions<BloggersContext> options)
             : base(options)
